@@ -8,7 +8,7 @@ The good solution is to have the script itself do the tunneling, seamlessly for 
 
 1. Clone this repository. 
 
-2. Make sure you have both `pymysql` and `sshtunnel` installed. If not, use `pip` to install them. 
+2. Make sure you have both `pymysql` and `sshtunnel` installed. If not, use `pip` to install them. Optionally, install `pandas` as well if you intend to use it, otherwise comment the import in `dbthingy.py`. 
 
 3. Check `dbthing.py`. The file is commented with a little bit of instructions. 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import pymysql
-import pandas as pd
+import pandas as pd  # Pandas is only needed if you intend to use it (duh). If not, comment this line.  
 from sshtunnel import SSHTunnelForwarder
 import passwd
 
