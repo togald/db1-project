@@ -8,9 +8,11 @@ The good solution is to have the script itself do the tunneling, seamlessly for 
 
 1. Clone this repository. 
 
-2. Check `dbthing.py`. The file is commented with a little bit of instructions. 
+2. Make sure you have both `pymysql` and `sshtunnel` installed. If not, use `pip` to install them. 
 
-You'll need to create a file `passwd.py` in the root directory containing the following variables: 
+3. Check `dbthing.py`. The file is commented with a little bit of instructions. 
+
+You'll need to create a file `passwd.py` in the root directory containing login credentials, like so: 
 
 ```python
 ssh_user     = <your-ssh-username>
