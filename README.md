@@ -1,25 +1,20 @@
 # Database technology 1 project
 
-Studium says to connect to one of the IT department's machines through an SSH tunnel, then work on the script locally and it should work. However, it does not, and despite a lot of trial and error I have not got SSH tunneling to work inside of Python (yet). The current way to run the script is: 
+Studium says to connect to one of the IT department's machines through an SSH tunnel, then work on the script locally and it should work. However, it does not. There are ugly solutions to this, like working on the file on one remote machine connecting to another remote machine. This is cumbersome. 
 
-1. Open a terminal and copy the script to one of the remote machines. I use Arrhenius because I already have a keyfile added (which means no password prompts). 
+The good solution is to have the script itself do the tunneling, seamlessly for the user. So that's what's happening. 
 
-```bash
-   scp dbthing.py toni1357@arrhenius.it.uu.se:/home/toni1357/db1 
+## Setup
+
+1. Clone this repository. 
+
+2. Check `dbthing.py`. The file is commented with a little bit of instructions. 
+
+You'll need to create a file `passwd.py` in the root directory containing the following variables: 
+
+```python
+ssh_user     = <your-ssh-username>
+ssh_pass     = <your-ssh-password>
+sql_username = <your-sql-username>
+sql_password = <your-sql-password>
 ```
-
-2. Connect normally to Arrhenius via SSH (or any of the IT department's Linux machines) as per the instructions in Studium. 
-
-```bash
-   ssh toni1357@arrhenius.it.uu.se
-```
-
-3. Run the script. 
-
-```bash
-   python3 dbthingy.py
-```
-
-The script is supposed to work with any SQL command and automatically changes the table's cell sizes to fit the data. Here's an example:
-
-![](scrot.png)

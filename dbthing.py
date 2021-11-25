@@ -1,40 +1,77 @@
-#!/usr/bin/env pyton3
-
-"""
-Paste this into a terminal and keep that terminal open while working with this: 
-ssh -L 3306:groucho.it.uu.se:3306 -o TCPKeepAlive=yes -o ServerAliveInterval=10 -o HostKeyAlgorithms=+ssh-rsa toni1357@beurling.it.uu.se
-
-However, since that doesn't work for some reason, the easiest thing to do is:
-SCP the file to Arrhenius: scp dbthing.py toni1357@arrhenius.it.uu.se:/home/toni1357/db1
-Connect to Arrhenius: ssh toni1357@arrhenius.it.uu.se
-Run the file on Arrhenius instead, because Arrhenius seems to be more updated and doesn't need the weird SSH fix
-"""
+#!/usr/bin/env python3
 
 import pymysql
+import pandas as pd
+from sshtunnel import SSHTunnelForwarder
+import passwd
+
+""" These are the input parameters, change accordingly
+"""
+ssh_host = 'arrhenius.it.uu.se'
+ssh_port = 22
+ssh_user = passwd.ssh_user
+ssh_pass = passwd.ssh_pass
+# If you're not tunneling, anything above this line may just be left as-is
+sql_hostname      = 'groucho.it.uu.se'
+sql_port          = 3306
+sql_username      = passwd.sql_username
+sql_password      = passwd.sql_password
+sql_main_database = 'ht21_2_project_group_4'
+# Arguably the most important thing you're doing
+query = 'select * from product'
+
+def tunneled_sql( query
+                , ssh_host = ssh_host
+                , ssh_port = ssh_port
+                , ssh_user = ssh_user
+                , ssh_pass = ssh_pass
+                , sql_hostname = sql_hostname
+                , sql_port     = sql_port    
+                ):
+    with SSHTunnelForwarder( (ssh_host, ssh_port)
+                           , ssh_username = ssh_user
+                           , ssh_password = ssh_pass
+                           , remote_bind_address = (sql_hostname, sql_port)
+                           ) as tunnel:
+        return sql_query( query, sql_hostname = '127.0.0.1', sql_port = tunnel.local_bind_port )
 
 def sql_query( query
-             , sqlhost   = 'groucho.it.uu.se'
-             , sqlport   = 3306
-             , sqluser   = 'ht21_2_group_4'
-             , sqlpasswd = 'pwd_4'
-             , sqldb     = 'ht21_2_project_group_4'
-             ): 
-    with pymysql.connect( host = sqlhost, port = sqlport, user = sqluser, passwd = sqlpasswd, db = sqldb ) as conn:
-        cur = conn.cursor()
-        cur.execute(query)
-        output = cur.fetchall()
-    return output
+               , sql_hostname      = sql_hostname     
+               , sql_port          = sql_port         
+               , sql_username      = sql_username     
+               , sql_password      = sql_password     
+               , sql_main_database = sql_main_database
+               ):
+    with pymysql.connect( host   = sql_hostname
+                        , user   = sql_username
+                        , passwd = sql_password
+                        , db     = sql_main_database
+                        , port   = sql_port
+                        ) as conn:
+        return sql_cursor( query, conn )
+        #return pd.read_sql_query( query, conn ) # Change to this line if you prefer using pandas for handling data visualization
 
-def sql_print( rows ):
+def sql_cursor( query, conn ):
+    cur = conn.cursor()
+    cur.execute(query)
+    data = cur.fetchall()
+    return sql_print( data )
+
+def sql_print( data ):
     maxwidths = []
-    for col in zip(*rows):
+    result = ''
+    for col in zip(*data):
         maxwidths.append(max(map(lambda _: max([len(str(_)), 8]), col)))
-    rowlists = []
+    rows = []
+    for row in data:
+        rows.append([ f"{str(row[i]):{maxwidths[i]}s}" for i in range(len(row)) ])
+    result += '#'*(sum(maxwidths)+len(maxwidths)*3+3)+'\n'
     for row in rows:
-        rowlists.append([ f"{str(row[i]):{maxwidths[i]}s}" for i in range(len(row)) ])
-    print('#'*(sum(maxwidths)+len(maxwidths)*3+3))
-    for rowlist in rowlists:
-        print(f"#| {' | '.join(rowlist)} |#")
-    print('#'*(sum(maxwidths)+len(maxwidths)*3+3))
-        
-sql_print(sql_query('select * from product'))
+        result += f"#| {' | '.join(row)} |#"+'\n'
+    result += '#'*(sum(maxwidths)+len(maxwidths)*3+3)
+    return result
+
+""" Make sure to comment the version you're not using
+"""
+print(tunneled_sql( query )) # Using tunneling
+#print(sql_query( query ))  # NOT using tunneling
