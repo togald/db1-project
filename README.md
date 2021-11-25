@@ -20,4 +20,6 @@ Studium says to connect to one of the IT department's machines through an SSH tu
    python3 dbthingy.py
 ```
 
-The script is supposed to work with any SQL command and automatically changes the table's cell sizes to fit the data. 
+The script is supposed to work with any SQL command and automatically changes the table's cell sizes to fit the data. Here's an example:
+
+![](scrot.png)
