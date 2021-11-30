@@ -102,8 +102,9 @@ def print_all_tables():
     for data in datas:
         sql_print(data)
 
-""" Make sure to comment the version you're not using
-"""
-#sql_print(tunneled_sql( query )) # Using tunneling
-#print(sql_query( query ))  # NOT using tunneling
-print_all_tables()
+if __name__ == "__main__":
+    """ Make sure to comment the version you're not using
+    """
+    #sql_print(tunneled_sql( query )) # Using tunneling
+    #print(sql_query( query ))  # NOT using tunneling
+    print_all_tables()
