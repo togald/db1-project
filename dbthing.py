@@ -62,6 +62,7 @@ def sql_cursor( query, conn ):
     cur = conn.cursor()
     cur.execute(query)
     data = cur.fetchall()
+    conn.commit()
     return data
 
 def sql_print( data ):
